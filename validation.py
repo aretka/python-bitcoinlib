@@ -3,8 +3,10 @@ import hashlib
 
 p = RawProxy()
 
-blockHash = raw_input('Iveskite bloko hasha: ')
+#taking block hash input
+blockHash = raw_input('Enter block hash: ')
 
+# creating little endian function
 def littleEndian(data):
         changedData = ""
         length = len(data)/2
@@ -14,6 +16,8 @@ def littleEndian(data):
         return changedData
 
 block = p.getblock(blockHash)
+#calculating header_hex using function little endian and taking as inputs versionHex, previousblockhash, merkleroot, time, bits, nonce
+#time and nonce have to be created into hex using format function
 header_hex = (
         littleEndian(block["versionHex"]) +
         littleEndian(block["previousblockhash"]) +
@@ -22,8 +26,13 @@ header_hex = (
         littleEndian(block["bits"]) +
         littleEndian('{:08x}'.format(block["nonce"]))
     )
+#header is decoded
 header_bin = header_hex.decode('hex')
+
+#creating hash using sha256 
 hashCheck = hashlib.sha256(hashlib.sha256(header_bin).digest()).digest()
+
+#checking manually created header hash and header hash which already exists
 if hashCheck[::-1].encode('hex_codec')== block['hash']:
     print("Hash is validated")
 else:
